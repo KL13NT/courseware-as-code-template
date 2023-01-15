@@ -33,7 +33,7 @@ function Lectures({
 							</a>
 						</Link>
 
-						<p>{formatDate(frontmatter.date)}</p>
+						<p>{formatDate(frontmatter.created)}</p>
 
 						<p>{frontmatter.description}</p>
 

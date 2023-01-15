@@ -2,6 +2,8 @@
 
 import React from "react";
 import SEO from "components/seo";
+import Link from "next/link";
+
 import type { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 
 import type { SlugStaticParams } from "interfaces/interfaces";
@@ -11,7 +13,7 @@ import {
 	getWebPathFromSlug,
 	unifiedMarkdownToHtml,
 } from "lib/api";
-import Link from "next/link";
+import { formatDate } from "lib/utils";
 
 export async function getStaticPaths() {
 	const paths = getAllCollectionSlugs("lectures").map((slug) => ({
@@ -53,14 +55,8 @@ export default function Slug({
 					<a>/home</a>
 				</Link>
 				<h1>{frontmatter.title}</h1>
-				<p>
-					{new Date(frontmatter.date).toLocaleDateString("en-GB", {
-						weekday: "long",
-						year: "numeric",
-						month: "long",
-						day: "numeric",
-					})}
-				</p>
+				<p>Created: {formatDate(frontmatter.created)}</p>
+				<p>Updated: {formatDate(frontmatter.updated)}</p>
 				<p>{frontmatter.description}</p>
 
 				{/* {documents.lecture ? (

@@ -10,7 +10,10 @@ class MyDocument extends Document {
 		return (
 			<Html lang="en">
 				<Head>
-					<link rel="stylesheet" href={config.classless} />
+					<link rel="stylesheet" href={config.theme} />
+					{config.highlightLanguages.map((lang) => (
+						<link rel="stylesheet" href={lang.style} key={lang.language} />
+					))}
 				</Head>
 				<body>
 					<Main />

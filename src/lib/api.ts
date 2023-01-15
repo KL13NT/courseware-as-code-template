@@ -17,6 +17,7 @@ import highlight from "rehype-highlight";
 import { COLLECTIONS_DIR } from "./constants";
 
 import { Post, PostFrontmatter } from "interfaces/interfaces";
+import { config } from "./config";
 
 export function getAllCollectionSlugs(collection: string) {
 	return readdirSync(resolve(COLLECTIONS_DIR, collection))
@@ -45,7 +46,8 @@ export function getPostBySlug(slug: string, collection: string): Post {
 	return {
 		frontmatter: {
 			...frontmatter,
-			date: new Date(stats.birthtime).toJSON(),
+			created: new Date(stats.birthtime).toJSON(),
+			updated: new Date(stats.mtime).toJSON(),
 		},
 		content: content,
 		slug, // filename without .md
@@ -59,8 +61,8 @@ export function getAllPosts() {
 	const posts = slugs
 		.map((slug) => getPostBySlug(slug, "lectures"))
 		.sort((post1, post2) => {
-			const date1 = new Date(post1.frontmatter.date).getTime();
-			const date2 = new Date(post2.frontmatter.date).getTime();
+			const date1 = new Date(post1.frontmatter.created).getTime();
+			const date2 = new Date(post2.frontmatter.created).getTime();
 
 			return date1 > date2 ? 1 : -1;
 		});
@@ -76,8 +78,7 @@ export const unifiedMarkdownToHtml = (content: string) =>
 		.use(katex)
 		.use(stringify)
 		.use(highlight, {
-			// TODO: based on settings
-			// languages: generateHighlightLanguages(highlightLanguages),
+			// languages: config.highlightLanguages.map((lang) => lang.language),
 		})
 		.process(content)
 		.then((file) => file.toString());

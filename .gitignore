@@ -103,3 +103,6 @@ out/
 
 # Markdown content
 collections/
+
+# CAC config
+cac.config.json

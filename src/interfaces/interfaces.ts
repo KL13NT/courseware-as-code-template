@@ -12,7 +12,8 @@ export interface HTMLToPDFContent {
 }
 
 export interface PostFrontmatter {
-	date: string;
+	created: string;
+	updated: string;
 	title: string;
 	description: string;
 }
@@ -37,4 +38,17 @@ export interface SlugStaticParams {
 
 export interface GenerateStaticResult extends Post {
 	pdf: Buffer;
+}
+
+export interface CacConfig {
+	courseName: string;
+	campusName: string;
+	courseDescription: string;
+	campusWebsite: string;
+	courseCode: string;
+	theme: string;
+	highlightLanguages: {
+		language: string;
+		style: string;
+	}[];
 }
