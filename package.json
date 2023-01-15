@@ -23,8 +23,12 @@
 		"node",
 		"setup"
 	],
-	"author": "",
-	"license": "GPL-3.0",
+	"author": {
+		"name": "Nabil Tharwat",
+		"email": "nabil.tharwat@outlook.com",
+		"url": "https://github.com/kl13nt"
+	},
+	"license": "GPL-3.0-only",
 	"dependencies": {
 		"@actions/core": "^1.6.0",
 		"@fullhuman/postcss-purgecss": "^4.1.3",
