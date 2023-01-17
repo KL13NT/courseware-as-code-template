@@ -1,13 +1,8 @@
-// const { readFileSync } = require("fs");
-// import { readFileSync } from "fs";
-
 import type { CacConfig } from "interfaces/interfaces";
-
-// const json = JSON.parse(readFileSync("cac.config.json", "utf-8")) as CacConfig;
 
 import json from "../../cac.config.json";
 
-const defaults = {
+const defaults: CacConfig = {
 	courseName: "My amazing course",
 	campusName: "Sample Campus",
 	courseDescription: "A sample course about computer science!",
@@ -23,7 +18,7 @@ const defaults = {
 	],
 };
 
-export const config = {
+export const config: CacConfig = {
 	...defaults,
 	...json,
 };
