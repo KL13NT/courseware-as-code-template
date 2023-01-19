@@ -1,5 +1,6 @@
 import SEO from "../components/seo";
 import Header from "../components/header";
+import Link from "next/link";
 
 <>
 	<SEO />
@@ -8,7 +9,13 @@ import Header from "../components/header";
 
 ## Important Course Links
 
-- [Lectures](/lectures)
+<ul>
+	<li>
+		<Link href="/lectures">
+			<a>Lectures</a>
+		</Link>
+	</li>
+</ul>
 
 Hello there! This is a simple welcoming page! To modify this page, edit
 `pages/index.mdx` in the project files.
