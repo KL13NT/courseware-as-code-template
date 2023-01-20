@@ -62,7 +62,7 @@ export function getAllPosts() {
 		.map((slug) => getPostBySlug(slug, "lectures"))
 		.sort((post1, post2) => {
 			const date1 = new Date(post1.frontmatter.created).getTime();
-			const date2 = new Date(post2.frontmatter.created).getTime();
+			const date2 = new Date(post2.frontmatter.updated).getTime();
 
 			return date1 > date2 ? 1 : -1;
 		});
