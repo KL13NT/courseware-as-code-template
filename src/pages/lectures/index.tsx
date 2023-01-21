@@ -32,7 +32,7 @@ function Lectures({
 							</a>
 						</Link>
 
-						<p>Updated: {frontmatter.created}</p>
+						<p>Created: {frontmatter.created}</p>
 
 						<p>{frontmatter.description}</p>
 

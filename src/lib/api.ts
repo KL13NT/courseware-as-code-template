@@ -109,7 +109,7 @@ export async function getAllPosts() {
 
 	const posts = Array.from(resolved).sort((post1, post2) => {
 		const date1 = new Date(post1.dateInfo.created).getTime();
-		const date2 = new Date(post2.dateInfo.updated).getTime();
+		const date2 = new Date(post2.dateInfo.created).getTime();
 
 		return date1 > date2 ? 1 : -1;
 	});
