@@ -13,7 +13,6 @@ import {
 	getWebPathFromSlug,
 	unifiedMarkdownToHtml,
 } from "lib/api";
-import { formatDate } from "lib/utils";
 
 export async function getStaticPaths() {
 	const paths = getAllCollectionSlugs("lectures").map((slug) => ({
@@ -31,7 +30,10 @@ export async function getStaticPaths() {
 export const getStaticProps = async ({
 	params,
 }: GetStaticPropsContext<SlugStaticParams>) => {
-	const post = getPostBySlug((params as SlugStaticParams).slug, "lectures");
+	const post = await getPostBySlug(
+		(params as SlugStaticParams).slug,
+		"lectures"
+	);
 
 	return {
 		props: {
@@ -55,8 +57,8 @@ export default function Slug({
 					<a>/home</a>
 				</Link>
 				<h1>{frontmatter.title}</h1>
-				<p>Created: {formatDate(frontmatter.created)}</p>
-				<p>Updated: {formatDate(frontmatter.updated)}</p>
+				<p>Created: {frontmatter.created}</p>
+				<p>Updated: {frontmatter.updated}</p>
 				<p>{frontmatter.description}</p>
 
 				{/* {documents.lecture ? (

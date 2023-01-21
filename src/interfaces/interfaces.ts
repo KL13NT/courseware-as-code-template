@@ -23,11 +23,19 @@ export interface PostDocuments {
 	// slides: string | null;
 }
 
+export interface DateInfo {
+	created: string;
+	updated: string;
+}
+
 export interface Post {
 	frontmatter: PostFrontmatter;
+	dateInfo: DateInfo;
 	content: string;
 	slug: string;
 	path: string;
+	fPath: string;
+	gitPath: string;
 	dir: string;
 }
 
