@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { readFileSync, readdirSync, statSync } from "fs";
 import { resolve } from "path";
 
@@ -17,23 +16,8 @@ import highlight from "rehype-highlight";
 
 import { COLLECTIONS_DIR } from "./constants";
 
-import type { Post, PostFrontmatter } from "interfaces/interfaces";
-
-import nodegit from "nodegit";
-
-export async function getGitFileStat(path: string) {
-	const repo = await nodegit.Repository.open(process.cwd());
-	const revWalker = repo.createRevWalk();
-	const history = await revWalker.fileHistoryWalk(path, Infinity);
-
-	const firstCommit = history[0].commit;
-	const lastCommit = history[history.length - 1].commit;
-
-	return {
-		created: firstCommit.date(),
-		updated: lastCommit.date(),
-	};
-}
+import { Post, PostFrontmatter } from "interfaces/interfaces";
+import { config } from "./config";
 
 export function getAllCollectionSlugs(collection: string) {
 	return readdirSync(resolve(COLLECTIONS_DIR, collection))
@@ -57,7 +41,7 @@ export function getPostBySlug(slug: string, collection: string): Post {
 
 	const parsed = matter(file);
 	const frontmatter = parsed.data as Omit<PostFrontmatter, "date">;
-	const { content } = parsed;
+	const content = parsed.content;
 
 	return {
 		frontmatter: {
@@ -65,14 +49,14 @@ export function getPostBySlug(slug: string, collection: string): Post {
 			created: new Date(stats.birthtime).toJSON(),
 			updated: new Date(stats.mtime).toJSON(),
 		},
-		content,
+		content: content,
 		slug, // filename without .md
 		path: getWebPathFromSlug(slug, collection), // web path
 		dir: resolve(__dirname, COLLECTIONS_DIR, collection),
 	};
 }
 
-export async function getAllPosts() {
+export function getAllPosts() {
 	const slugs = getAllCollectionSlugs("lectures");
 	const posts = slugs
 		.map((slug) => getPostBySlug(slug, "lectures"))
@@ -86,8 +70,8 @@ export async function getAllPosts() {
 	return posts;
 }
 
-export const unifiedMarkdownToHtml = async (content: string) => {
-	const file = await unified()
+export const unifiedMarkdownToHtml = (content: string) =>
+	unified()
 		.use(markdown)
 		.use(math)
 		.use(remark2rehype)
@@ -96,7 +80,5 @@ export const unifiedMarkdownToHtml = async (content: string) => {
 		.use(highlight, {
 			// languages: config.highlightLanguages.map((lang) => lang.language),
 		})
-		.process(content);
-
-	return file.toString();
-};
+		.process(content)
+		.then((file) => file.toString());
