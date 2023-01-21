@@ -46,7 +46,7 @@ function Lectures({
 }
 
 export async function getStaticProps() {
-	const posts = getAllPosts();
+	const posts = await getAllPosts();
 	const { config } = await import("lib/config");
 
 	return {
