@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { readFileSync, readdirSync } from "fs";
-import { join, resolve } from "path";
+import { readFileSync, readdirSync, statSync } from "fs";
+import { resolve } from "path";
 
 import matter from "gray-matter";
 import unified from "unified";
@@ -20,27 +20,11 @@ import { COLLECTIONS_DIR } from "./constants";
 import type { Post, PostFrontmatter } from "interfaces/interfaces";
 
 import nodegit from "nodegit";
-import { formatDate } from "./utils";
-
-const GIT_SORT_TOPOLOGICAL = 4;
 
 export async function getGitFileStat(path: string) {
-	const repo = await nodegit.Repository.open(join(process.cwd(), ".git"));
-
-	const walker = repo.createRevWalk();
-	const master = await repo.getMasterCommit();
-
-	walker.push(master.id());
-	walker.sorting(GIT_SORT_TOPOLOGICAL);
-
-	const history = await walker.fileHistoryWalk(path, Number.MAX_SAFE_INTEGER);
-
-	if (history.length === 0) {
-		return {
-			created: new Date(),
-			updated: new Date(),
-		};
-	}
+	const repo = await nodegit.Repository.open(process.cwd());
+	const revWalker = repo.createRevWalk();
+	const history = await revWalker.fileHistoryWalk(path, Infinity);
 
 	const firstCommit = history[0].commit;
 	const lastCommit = history[history.length - 1].commit;
@@ -66,53 +50,38 @@ export function getWebPathFromSlug(slug: string, collection: string) {
 	return `${collection}/${slug.replace(".md", "")}`;
 }
 
-export function getGitPath(slug: string, collection: string) {
-	return `collections/${collection}/${slug}.md`;
-}
-
-export async function getPostBySlug(slug: string, collection: string) {
+export function getPostBySlug(slug: string, collection: string): Post {
 	const filePath = getFSPathFromSlug(slug, collection);
+	const stats = statSync(filePath);
 	const file = readFileSync(filePath);
 
 	const parsed = matter(file);
 	const frontmatter = parsed.data as Omit<PostFrontmatter, "date">;
-	const dateInfo = await getGitFileStat(getGitPath(slug, collection));
-
 	const { content } = parsed;
 
 	return {
 		frontmatter: {
 			...frontmatter,
-			created: formatDate(dateInfo.created),
-			updated: formatDate(dateInfo.updated),
-		},
-		dateInfo: {
-			created: dateInfo.created.toJSON(),
-			updated: dateInfo.updated.toJSON(),
+			created: new Date(stats.birthtime).toJSON(),
+			updated: new Date(stats.mtime).toJSON(),
 		},
 		content,
 		slug, // filename without .md
 		path: getWebPathFromSlug(slug, collection), // web path
-		fPath: getFSPathFromSlug(slug, collection), // file system complete path
-		gitPath: getGitPath(slug, collection), // git relative path
 		dir: resolve(__dirname, COLLECTIONS_DIR, collection),
-	} as Post;
+	};
 }
 
 export async function getAllPosts() {
 	const slugs = getAllCollectionSlugs("lectures");
-	const postRequests = slugs.map(async (slug) =>
-		getPostBySlug(slug, "lectures")
-	);
+	const posts = slugs
+		.map((slug) => getPostBySlug(slug, "lectures"))
+		.sort((post1, post2) => {
+			const date1 = new Date(post1.frontmatter.created).getTime();
+			const date2 = new Date(post2.frontmatter.created).getTime();
 
-	const resolved = await Promise.all(postRequests);
-
-	const posts = Array.from(resolved).sort((post1, post2) => {
-		const date1 = new Date(post1.dateInfo.created).getTime();
-		const date2 = new Date(post2.dateInfo.created).getTime();
-
-		return date1 > date2 ? 1 : -1;
-	});
+			return date1 > date2 ? 1 : -1;
+		});
 
 	return posts;
 }

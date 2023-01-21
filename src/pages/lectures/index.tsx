@@ -6,6 +6,7 @@ import type { InferGetStaticPropsType } from "next";
 import SEO from "components/seo";
 
 import { getAllPosts } from "lib/api";
+import { formatDate } from "lib/utils";
 
 function Lectures({
 	posts,
@@ -32,7 +33,7 @@ function Lectures({
 							</a>
 						</Link>
 
-						<p>Created: {frontmatter.created}</p>
+						<p>{formatDate(frontmatter.created)}</p>
 
 						<p>{frontmatter.description}</p>
 
